@@ -3,22 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Service Preview</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Super Service - Category Search Prototype</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-
-        body {
-            background-color: #0d1117; display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; color: #ffffff;
-            background-image: radial-gradient(circle at top right, rgba(0, 195, 255, 0.1) 0%, transparent 40%),
-                              radial-gradient(circle at bottom left, rgba(0, 110, 255, 0.05) 0%, transparent 40%);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        ::-webkit-scrollbar { width: 0px; } /* hide scrollbar for sleekness */
+        
+        body { background-color: #0b0e14; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #ffffff; overflow: hidden; }
 
         .device {
             width: 375px; height: 812px; background-color: #121820; border-radius: 40px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 0 0 8px #000; overflow: hidden;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 0 0 8px #000; overflow: hidden;
             position: relative; display: flex; flex-direction: column;
         }
 
@@ -28,63 +24,65 @@
             border-bottom-right-radius: 16px; z-index: 100;
         }
 
-        .screen {
-            flex: 1; display: none; flex-direction: column; animation: fadeIn 0.4s ease forwards;
-            overflow-y: auto; position: relative;
-        }
+        .screen { flex: 1; display: none; flex-direction: column; animation: slideInX 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; overflow-y: auto; background-color: #0b0e14; padding-bottom: 20px;}
         .screen.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInX { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-        /* General Styles */
-        .splash { justify-content: center; align-items: center; background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); text-align: center; }
-        .splash i { font-size: 80px; color: #00c3ff; filter: drop-shadow(0 0 20px rgba(0, 195, 255, 0.5)); margin-bottom: 20px; }
-        .splash h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; }
-
-        .login { padding: 60px 30px; justify-content: center; background: linear-gradient(to bottom, #121820, #0a0d11); }
-        .login input { width: 100%; padding: 18px 20px 18px 50px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: white; outline: none; transition: all 0.3s ease; }
-        .btn-primary { width: 100%; padding: 18px; border-radius: 16px; border: none; background: linear-gradient(135deg, #00c3ff, #006eff); color: white; font-weight: 600; cursor: pointer; margin-top: 20px; }
-
-        .home { background-color: #0a0d11; padding-bottom: 80px; }
-        .home-header { padding: 50px 24px 20px; background: linear-gradient(to bottom, #1a2235, #0a0d11); }
-        .search-bar { margin-top: 20px; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
-        .search-bar i { color: rgba(255,255,255,0.4); margin-right: 15px; }
-        .search-bar input { background: transparent; border: none; color: white; width: 100%; outline: none; }
-        .promo-banner { margin: 20px 24px; background: linear-gradient(135deg, #ff416c, #ff4b2b); border-radius: 20px; padding: 24px; }
-        .services-section { padding: 10px 24px; }
-        .services-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-        .service-icon-box { width: 60px; height: 60px; border-radius: 18px; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 8px; background: rgba(255,255,255,0.05); }
-        .taxi .service-icon-box { color: #ffc107; } .food .service-icon-box { color: #ff5722; } .shop .service-icon-box { color: #4caf50; } .home-svc .service-icon-box { color: #2196f3; }
-
-        /* Unified Search Results Styles */
-        .search-results { background-color: #0a0d11; }
-        .comparison-card {
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 16px; padding: 16px; margin-bottom: 15px; position: relative;
-            display: flex; flex-direction: column; gap: 10px; cursor: pointer; transition: 0.2s;
-        }
-        .comparison-card:active { transform: scale(0.98); }
-        .comparison-card.best-deal { border: 1px solid #00c3ff; background: rgba(0,195,255,0.05); }
-        .best-badge {
-            position: absolute; top: -10px; right: 20px; background: #00c3ff; color: #000;
-            padding: 4px 10px; font-size: 10px; font-weight: 800; border-radius: 10px; text-transform: uppercase;
-            box-shadow: 0 0 10px rgba(0,195,255,0.5);
-        }
-        .comp-header { display: flex; justify-content: space-between; align-items: center; }
-        .comp-platform { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
-        .comp-price { font-size: 20px; font-weight: 800; }
-        .comp-metrics { display: flex; gap: 15px; font-size: 11px; color: rgba(255,255,255,0.6); }
-        .comp-metrics div { display: flex; align-items: center; gap: 4px; }
-
-        /* Webview Overlay */
-        .webview { background-color: #fff; display: none; flex-direction: column; height: 100%; color: #000; }
-        .webview.active { display: flex; animation: slideUp 0.3s ease forwards; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .webview-header { padding: 45px 20px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .webview-content-area { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        /* Login */
+        .login { padding: 60px 30px; justify-content: center; background: radial-gradient(circle at top right, #1a2333, #0b0e14); text-align: center; }
+        .login-logo { font-size: 60px; background: -webkit-linear-gradient(#00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 20px rgba(79, 172, 254, 0.4)); margin-bottom: 20px; animation: bounce 2s infinite ease-in-out;}
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         
-        /* Bottom Nav */
-        .bottom-nav { position: absolute; bottom: 0; width: 100%; height: 80px; background: rgba(18, 24, 32, 0.9); display: flex; justify-content: space-around; align-items: center; padding-bottom: 20px; }
-        .nav-item { color: rgba(255,255,255,0.4); display: flex; flex-direction: column; align-items: center; } .nav-item.active { color: #00c3ff; } .nav-item i { font-size: 22px; margin-bottom: 4px; }
+        .input-group { margin-bottom: 15px; position: relative; }
+        .input-group i { position: absolute; left: 25px; top: 18px; color: rgba(255,255,255,0.5); }
+        .login input { width: 100%; padding: 18px 20px 18px 55px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.03); color: white; outline: none; font-size: 15px; transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .login input:focus { background: rgba(255,255,255,0.08); border-color: #4facfe; box-shadow: 0 0 15px rgba(79, 172, 254, 0.3); }
+        .btn-primary { width: 100%; padding: 18px; border-radius: 20px; border: none; background: linear-gradient(135deg, #4facfe, #00f2fe); color: #000; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 20px; transition: transform 0.2s; box-shadow: 0 10px 20px rgba(0, 242, 254, 0.3); }
+        .btn-primary:active { transform: scale(0.95); }
+
+        /* Home Dashboard */
+        .header { padding: 50px 24px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .user-greeting { font-size: 28px; font-weight: 800; background: -webkit-linear-gradient(#fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* Stunning Category Cards */
+        .categories-grid { padding: 10px 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .cat-card {
+            border-radius: 24px; padding: 24px 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; overflow: hidden; transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .cat-card:active { transform: scale(0.92); }
+        .cat-card i { font-size: 38px; margin-bottom: 12px; position: relative; z-index: 2; color: #fff; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));}
+        .cat-card h3 { font-size: 16px; font-weight: 700; position: relative; z-index: 2; color: #fff; }
+        
+        .cat-shop { background: linear-gradient(135deg, #ff416c, #ff4b2b); box-shadow: 0 10px 25px rgba(255, 65, 108, 0.3); }
+        .cat-ride { background: linear-gradient(135deg, #fceabb, #f8b500); box-shadow: 0 10px 25px rgba(248, 181, 0, 0.3); }
+        .cat-ride h3, .cat-ride i { color: #111;}
+        .cat-food { background: linear-gradient(135deg, #43e97b, #38f9d7); box-shadow: 0 10px 25px rgba(67, 233, 123, 0.3); }
+        .cat-food h3, .cat-food i { color: #111;}
+        .cat-grocery { background: linear-gradient(135deg, #667eea, #764ba2); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3); }
+
+        /* Dynamic Category Hub Screen */
+        .hub-header { padding: 50px 24px 20px; transition: background 0.4s; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
+        .back-btn { font-size: 20px; cursor: pointer; padding: 10px 0; color: #fff; }
+        
+        .search-container { margin-top: 15px; position: relative; }
+        .search-container i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: rgba(0,0,0,0.5); font-size: 18px; }
+        .search-container input { width: 100%; padding: 16px 20px 16px 45px; border-radius: 16px; border: none; background: rgba(255,255,255,0.9); color: #000; font-size: 15px; font-weight: 600; outline: none; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+
+        /* Partners List / Search Results */
+        .hub-body { padding: 20px 24px; position: relative; min-height: 400px;}
+        .section-label { font-size: 14px; color: rgba(255,255,255,0.5); font-weight: 600; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;}
+        
+        .partner-pill { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 15px 20px; display: flex; align-items: center; gap: 15px; margin-bottom: 12px; animation: slideInX 0.4s ease forwards; transform: scale(0.95); opacity: 0;}
+        .partner-pill:nth-child(2) { animation-delay: 0.1s; }
+        .partner-pill:nth-child(3) { animation-delay: 0.2s; }
+        
+        /* Search Card Comparison */
+        .comp-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 20px; margin-bottom: 15px; position: relative; overflow: hidden; animation: slideInX 0.4s ease forwards; opacity:0;}
+        .comp-card:nth-child(2) { animation-delay: 0.1s; }
+        .comp-card:nth-child(3) { animation-delay: 0.2s; }
+        .comp-card.best { border: 2px solid #4facfe; background: rgba(79, 172, 254, 0.05); box-shadow: 0 10px 30px rgba(79, 172, 254, 0.15);}
+        .comp-card.best::before { content: 'BEST CHOICE'; position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #4facfe, #00f2fe); color: #000; font-size: 10px; font-weight: 800; padding: 6px 12px; border-bottom-left-radius: 12px; letter-spacing: 1px; }
+
     </style>
 </head>
 <body>
@@ -92,195 +90,225 @@
 <div class="device">
     <div class="notch"></div>
 
-    <!-- 1: Splash -->
-    <div class="screen splash active" id="splashScreen">
-        <i class="fa-solid fa-shapes"></i>
-        <h1>Super Service</h1>
-    </div>
-
-    <!-- 2: Login -->
-    <div class="screen login" id="loginScreen">
-        <h2 style="color:white; font-size:36px; margin-bottom:40px; font-weight:700;">Welcome<br>Back</h2>
-        <div class="input-group" style="position:relative; margin-bottom:20px;">
-            <i class="fa-regular fa-envelope" style="position:absolute; left:20px; top:18px; color:rgba(255,255,255,0.4);"></i>
-            <input type="email" value="user@example.com">
-        </div>
-        <div class="input-group" style="position:relative; margin-bottom:20px;">
-            <i class="fa-solid fa-lock" style="position:absolute; left:20px; top:18px; color:rgba(255,255,255,0.4);"></i>
-            <input type="password" value="password123">
-        </div>
-        <button class="btn-primary" onclick="goToHome()">Login to Continue</button>
-    </div>
-
-    <!-- 3: Home Dashboard -->
-    <div class="screen home" id="homeScreen">
-        <div class="home-header">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div><p style="color:rgba(255,255,255,0.6); font-size:14px;">Good Morning,</p><p style="font-size:24px; font-weight:700; color:white;">Alex M.</p></div>
-                <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; justify-content: center; align-items: center; position: relative;">
-                    <i class="fa-solid fa-cart-shopping" style="color: white; font-size: 16px;"></i>
-                    <span style="position: absolute; top: 0px; right: -2px; background: #00c3ff; border: 2px solid #1a2235; border-radius: 50%; width: 12px; height: 12px;"></span>
-                </div>
-            </div>
-            
-            <div class="search-bar" onclick="openSearch()">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" placeholder="Search across Amazon, Flipkart..." readonly>
-            </div>
-        </div>
-
-        <div class="promo-banner">
-            <h3 style="margin-bottom: 5px;">50% Off First Ride!</h3>
-            <p style="opacity:0.8; font-size:14px;">Use code SUPER50 at checkout.</p>
-        </div>
-
-        <div class="services-section">
-            <p style="font-size:18px; font-weight:600; margin-bottom:15px;">Explore Hubs</p>
-            <div class="services-grid">
-                <div class="service-item taxi"><div class="service-icon-box" style="background:rgba(255,193,7,0.15)"><i class="fa-solid fa-car"></i></div><span style="font-size:12px; color:rgba(255,255,255,0.7)">Ride</span></div>
-                <div class="service-item food"><div class="service-icon-box" style="background:rgba(255,87,34,0.15)"><i class="fa-solid fa-burger"></i></div><span style="font-size:12px; color:rgba(255,255,255,0.7)">Food</span></div>
-                <div class="service-item shop"><div class="service-icon-box" style="background:rgba(76,175,80,0.15)"><i class="fa-solid fa-bag-shopping"></i></div><span style="font-size:12px; color:rgba(255,255,255,0.7)">Shop</span></div>
-                <div class="service-item home-svc"><div class="service-icon-box" style="background:rgba(33,150,243,0.15)"><i class="fa-solid fa-wrench"></i></div><span style="font-size:12px; color:rgba(255,255,255,0.7)">Fix</span></div>
-            </div>
-        </div>
-
-        <div class="bottom-nav">
-            <div class="nav-item active"><i class="fa-solid fa-compass"></i></div>
-            <div class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i></div>
-            <div class="nav-item"><i class="fa-solid fa-bell"></i></div>
-            <div class="nav-item"><i class="fa-solid fa-user"></i></div>
-        </div>
-    </div>
-
-    <!-- 4: Unified Aggregator Search Screen -->
-    <div class="screen search-results" id="searchScreen">
-        <div style="padding: 50px 20px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); display:flex; align-items:center; gap:15px;">
-            <i class="fa-solid fa-arrow-left" onclick="closeSearch()" style="font-size:20px; cursor:pointer;"></i>
-            <div class="search-bar" style="margin-top:0; padding:12px 15px; flex:1;">
-                <input type="text" id="searchInput" value="iPhone 15 Pro" onkeyup="performMockSearch()">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </div>
-        </div>
+    <!-- Login Screen -->
+    <div class="screen login active" id="loginScreen">
+        <div class="login-logo"><i class="fa-solid fa-shapes"></i></div>
+        <h1 style="font-size:32px; font-weight:800; margin-bottom:5px;">Super App</h1>
+        <p style="color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:40px;">Your everyday everything app.</p>
         
-        <div style="padding: 20px; flex:1; overflow-y:auto;">
-            <p style="font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:15px;" id="querySubtitle">Comparing platforms for "iPhone 15 Pro"</p>
-            <div id="resultsContainer">
-                <!-- Dynamically populated by JS algorithm -->
+        <div class="input-group"><i class="fa-solid fa-user"></i><input type="text" value="alex@example.com"></div>
+        <div class="input-group"><i class="fa-solid fa-lock"></i><input type="password" value="pass123"></div>
+        
+        <button class="btn-primary" onclick="switchScreen('homeScreen')">Access World</button>
+    </div>
+
+    <!-- Home Dashboard -->
+    <div class="screen home" id="homeScreen">
+        <div class="header">
+            <div>
+                <p style="color:rgba(255,255,255,0.6); font-size:16px;">Welcome back,</p>
+                <div class="user-greeting">Alex!</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.1); width:45px; height:45px; border-radius:50%; display:flex; justify-content:center; align-items:center;">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+        </div>
+
+        <p style="padding:0 24px; font-size:18px; font-weight:600; margin:10px 0;">What do you need today?</p>
+        
+        <div class="categories-grid">
+            <div class="cat-card cat-shop" onclick="openHub('shopping')">
+                <i class="fa-solid fa-bag-shopping"></i><h3>Shopping</h3>
+            </div>
+            <div class="cat-card cat-ride" onclick="openHub('ride')">
+                <i class="fa-solid fa-car"></i><h3>Ride</h3>
+            </div>
+            <div class="cat-card cat-food" onclick="openHub('food')">
+                <i class="fa-solid fa-burger"></i><h3>Food</h3>
+            </div>
+            <div class="cat-card cat-grocery" onclick="openHub('grocery')">
+                <i class="fa-solid fa-basket-shopping"></i><h3>Grocery</h3>
             </div>
         </div>
     </div>
 
-    <!-- 5: Third Party Webview -->
-    <div class="screen webview" id="webviewScreen">
-        <div class="webview-header">
-            <i class="fa-solid fa-xmark" onclick="closeWebview()"></i>
-            <div style="text-align: center;">
-                <div style="font-weight:600; font-size:14px; color:#333;" id="wvName">Loading...</div>
-                <div style="font-size:11px; color:#888;" id="wvUrl">https://...</div>
+    <!-- Dynamic Category Hub Screen -->
+    <div class="screen hub" id="hubScreen">
+        <div class="hub-header" id="hubHeaderStyle">
+            <i class="fa-solid fa-arrow-left back-btn" onclick="switchScreen('homeScreen')"></i>
+            <h2 id="hubTitle" style="font-size:28px; font-weight:800; margin-top:5px;">Category</h2>
+            
+            <div class="search-container">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="hubSearchInput" placeholder="Search..." onkeyup="handleSearch(event)">
             </div>
-            <i class="fa-solid fa-ellipsis-vertical" style="color: #333;"></i>
         </div>
-        <div class="webview-content-area">
-            <i class="fa-solid fa-spinner fa-spin" style="font-size:30px; color:#ccc; margin-bottom:15px;"></i>
-            <p id="wvText" style="color:#888; font-size:14px;">Logging you in to partner portal safely...</p>
+
+        <div class="hub-body">
+            <p class="section-label" id="hubSectionLabel">Aggregated Partners</p>
+            <div id="hubContentArea">
+                <!-- Javascript will inject partners or search comparisons here -->
+            </div>
         </div>
     </div>
+
 </div>
 
 <script>
-    setTimeout(() => {
-        document.getElementById('splashScreen').classList.remove('active');
-        document.getElementById('loginScreen').classList.add('active');
-    }, 1500);
+    // System Data Architecture
+    const appData = {
+        shopping: {
+            title: 'Shopping', themeHeader: 'linear-gradient(135deg, #ff416c, #ff4b2b)', textHeader: '#fff',
+            placeholder: 'e.g. men jeans, shoes',
+            partners: [
+                { name: 'Amazon', icon: 'fa-brands fa-amazon', color: '#ff9900' },
+                { name: 'Flipkart', icon: 'fa-solid fa-cart-shopping', color: '#047bd5' },
+                { name: 'Meesho', icon: 'fa-solid fa-bag-shopping', color: '#f43397' }
+            ],
+            generators: [
+                { plat: 'Amazon', name: 'Premium $Q', basePrice: 1200, rating: 4.8, del: '1 Day', icon: 'fa-brands fa-amazon', col: '#ff9900' },
+                { plat: 'Flipkart', name: 'Trending $Q', basePrice: 999, rating: 4.5, del: '3 Days', icon: 'fa-solid fa-cart-shopping', col: '#047bd5' },
+                { plat: 'Meesho', name: 'Casual $Q', basePrice: 450, rating: 3.9, del: '5 Days', icon: 'fa-solid fa-bag-shopping', col: '#f43397' }
+            ]
+        },
+        ride: {
+            title: 'Rides', themeHeader: 'linear-gradient(135deg, #fceabb, #f8b500)', textHeader: '#000',
+            placeholder: 'e.g. Airport, Mall',
+            partners: [
+                { name: 'Uber', icon: 'fa-brands fa-uber', color: '#000' },
+                { name: 'Ola', icon: 'fa-solid fa-car', color: '#cddc39', darkText: true },
+                { name: 'Rapido', icon: 'fa-solid fa-motorcycle', color: '#f9c522', darkText: true }
+            ],
+            generators: [
+                { plat: 'Uber', name: 'Uber Go to $Q', basePrice: 450, rating: 4.7, del: '3 mins away', icon: 'fa-brands fa-uber', col: '#000' },
+                { plat: 'Ola', name: 'Ola Mini to $Q', basePrice: 410, rating: 4.3, del: '5 mins away', icon: 'fa-solid fa-car', col: '#cddc39' },
+                { plat: 'Rapido', name: 'Bike to $Q', basePrice: 180, rating: 4.8, del: '2 mins away', icon: 'fa-solid fa-motorcycle', col: '#f9c522' }
+            ]
+        },
+        food: {
+            title: 'Food Delivery', themeHeader: 'linear-gradient(135deg, #43e97b, #38f9d7)', textHeader: '#000',
+            placeholder: 'e.g. Biryani, Pizza',
+            partners: [
+                { name: 'Zomato', icon: 'fa-solid fa-utensils', color: '#e23744' },
+                { name: 'Swiggy', icon: 'fa-solid fa-motorcycle', color: '#fc8019' }
+            ],
+            generators: [
+                { plat: 'Zomato', name: 'Spicy $Q', basePrice: 350, rating: 4.6, del: '35 mins', icon: 'fa-solid fa-utensils', col: '#e23744' },
+                { plat: 'Swiggy', name: 'Hot $Q Combos', basePrice: 320, rating: 4.4, del: '40 mins', icon: 'fa-solid fa-motorcycle', col: '#fc8019' }
+            ]
+        },
+        grocery: {
+            title: 'Groceries', themeHeader: 'linear-gradient(135deg, #667eea, #764ba2)', textHeader: '#fff',
+            placeholder: 'e.g. Milk, Bread, Fruits',
+            partners: [
+                { name: 'Instamart', icon: 'fa-solid fa-bolt', color: '#fc8019' },
+                { name: 'BigBasket', icon: 'fa-solid fa-basket-shopping', color: '#84c225' }
+            ],
+            generators: [
+                { plat: 'Instamart', name: 'Fresh $Q', basePrice: 80, rating: 4.8, del: '10 Mins', icon: 'fa-solid fa-bolt', col: '#fc8019' },
+                { plat: 'BigBasket', name: 'Organic $Q Pack', basePrice: 75, rating: 4.5, del: 'Tomorrow', icon: 'fa-solid fa-basket-shopping', col: '#84c225' }
+            ]
+        }
+    };
 
-    function goToHome() {
-        document.getElementById('loginScreen').classList.remove('active');
-        document.getElementById('homeScreen').classList.add('active');
+    let activeHubId = '';
+
+    function switchScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        if(screenId === 'homeScreen') { activeHubId = ''; document.getElementById('hubSearchInput').value = ''; }
     }
 
-    function openSearch() {
-        document.getElementById('homeScreen').classList.remove('active');
-        document.getElementById('searchScreen').classList.add('active');
-        performMockSearch(); // Trigger immediate mock API evaluation
-    }
-
-    function closeSearch() {
-        document.getElementById('searchScreen').classList.remove('active');
-        document.getElementById('homeScreen').classList.add('active');
-    }
-
-    // This replicates the identical logic we built in aggregatorEngine.js backend!
-    function performMockSearch() {
-        const query = document.getElementById('searchInput').value || 'iPhone 15 Pro';
-        document.getElementById('querySubtitle').innerText = `Comparing platforms for "${query}"`;
+    function openHub(id) {
+        activeHubId = id;
+        const data = appData[id];
         
-        const amazonPrice = Math.floor(Math.random() * (90000 - 80000) + 80000);
-        const flipkartPrice = amazonPrice + (Math.floor(Math.random() * 2000 - 1000)); 
+        // Theme Apply
+        const header = document.getElementById('hubHeaderStyle');
+        header.style.background = data.themeHeader;
+        document.getElementById('hubTitle').innerText = data.title;
+        document.getElementById('hubTitle').style.color = data.textHeader;
+        document.querySelector('.back-btn').style.color = data.textHeader;
+        
+        const searchInput = document.getElementById('hubSearchInput');
+        searchInput.placeholder = data.placeholder;
+        searchInput.value = '';
 
-        let results = [
-            {
-                platform: 'Amazon', name: `Apple ${query}`, price: amazonPrice,
-                rating: 4.8, delivery: 1, url: 'amazon.in/checkout', icon: 'fa-amazon', color: '#ff9900'
-            },
-            {
-                platform: 'Flipkart', name: `Apple ${query} (Mobile)`, price: flipkartPrice,
-                rating: 4.6, delivery: 3, url: 'flipkart.com/checkout', icon: 'fa-cart-shopping', color: '#047bd5'
-            }
-        ];
-
-        // Engine Weighted Evaluation
-        results.forEach(res => {
-            res.score = ((100000/res.price)*0.6) + ((5/res.delivery)*0.3) + ((res.rating/5)*0.1);
-        });
-        results.sort((a,b) => b.score - a.score);
-        results[0].best = true; // Flag 1st place
-
-        renderResults(results);
+        renderPartners();
+        switchScreen('hubScreen');
     }
 
-    function renderResults(results) {
+    function renderPartners() {
+        document.getElementById('hubSectionLabel').innerText = 'Aggregated Partners';
+        const data = appData[activeHubId];
         let html = '';
-        results.forEach(item => {
-            let formatPrice = item.price.toLocaleString('en-IN');
-            let badge = item.best ? `<div class="best-badge">Best Choice</div>` : '';
-            let highlightClass = item.best ? 'best-deal' : '';
-
+        data.partners.forEach(p => {
+            const txtCol = p.darkText ? '#000' : '#fff';
             html += `
-                <div class="comparison-card ${highlightClass}" onclick="openWebview('${item.platform}', '${item.url}')">
-                    ${badge}
-                    <div class="comp-header">
-                        <div class="comp-platform" style="color: ${item.color}">
-                            <i class="fa-brands ${item.icon} fa-solid"></i> ${item.platform}
-                        </div>
-                        <div class="comp-price">₹${formatPrice}</div>
+                <div class="partner-pill">
+                    <div style="background:${p.color}; width:45px; height:45px; border-radius:12px; display:flex; justify-content:center; align-items:center; color:${txtCol}; font-size:20px;">
+                        <i class="${p.icon}"></i>
                     </div>
-                    <div style="font-size:13px; color:white; margin: 4px 0;">${item.name}</div>
-                    <div class="comp-metrics">
-                        <div><i class="fa-solid fa-star" style="color:#ffc107;"></i> ${item.rating}/5</div>
-                        <div><i class="fa-solid fa-truck-fast"></i> Delivers in ${item.delivery} day(s)</div>
+                    <div style="font-weight:600; font-size:18px;">${p.name}</div>
+                    <i class="fa-solid fa-arrow-right" style="margin-left:auto; color:rgba(255,255,255,0.2);"></i>
+                </div>
+            `;
+        });
+        document.getElementById('hubContentArea').innerHTML = html;
+    }
+
+    function handleSearch(e) {
+        const query = e.target.value.trim();
+        if(query.length > 0) {
+            renderComparisons(query);
+        } else {
+            renderPartners();
+        }
+    }
+
+    function renderComparisons(query) {
+        document.getElementById('hubSectionLabel').innerText = `Comparing results for "${query}"`;
+        const data = appData[activeHubId];
+
+        // Generate mock data based on query 
+        let comps = data.generators.map(g => {
+            // Randomize price slightly around base
+            let variance = Math.floor(g.basePrice * 0.1); 
+            let finalPrice = g.basePrice + (Math.floor(Math.random() * variance * 2) - variance);
+            
+            // Score Logic: Lower price = better
+            let score = (1000 / finalPrice) * g.rating;
+
+            return { ...g, name: g.name.replace('$Q', query), price: finalPrice, score: score };
+        });
+
+        // Sort & Find Best
+        comps.sort((a,b) => b.score - a.score);
+        comps[0].best = true;
+
+        let html = '';
+        comps.forEach(c => {
+            const bestClass = c.best ? 'best' : '';
+            html += `
+                <div class="comp-card ${bestClass}">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <div style="display:flex; align-items:center; gap:8px; color:${c.col}; font-weight:700;"><i class="${c.icon}"></i> ${c.plat}</div>
+                        <div style="font-size:22px; font-weight:800;">₹${c.price}</div>
                     </div>
-                    <button style="margin-top:10px; width:100%; padding:10px; border-radius:10px; border:none; background:${item.color}; color:white; font-weight:600; cursor:pointer;">
-                        Buy via ${item.platform}
+                    <p style="font-size:15px; margin-bottom:15px;">${c.name}</p>
+                    <div style="display:flex; justify-content:space-between; font-size:12px; color:rgba(255,255,255,0.6);">
+                        <div><i class="fa-solid fa-star" style="color:#ffc107;"></i> ${c.rating}</div>
+                        <div><i class="fa-solid fa-bolt"></i> ${c.del}</div>
+                    </div>
+                    <button style="width:100%; margin-top:15px; padding:12px; border-radius:12px; border:none; background:${c.col}; color:${c.plat==='Ola'||c.plat==='Rapido'||c.plat==='Uber'?'#fff':'#fff'}; font-weight:600; cursor:pointer;">
+                        Purchase via ${c.plat}
                     </button>
                 </div>
             `;
         });
-        document.getElementById('resultsContainer').innerHTML = html;
+        document.getElementById('hubContentArea').innerHTML = html;
     }
 
-    function openWebview(name, url) {
-        document.getElementById('searchScreen').classList.remove('active');
-        document.getElementById('webviewScreen').classList.add('active');
-        document.getElementById('wvName').innerText = name;
-        document.getElementById('wvUrl').innerText = 'https://www.' + url;
-        document.getElementById('wvText').innerText = `Logging you into ${name} safely using Super App...`;
-    }
-
-    function closeWebview() {
-        document.getElementById('webviewScreen').classList.remove('active');
-        document.getElementById('searchScreen').classList.add('active');
-    }
 </script>
-
 </body>
 </html>
