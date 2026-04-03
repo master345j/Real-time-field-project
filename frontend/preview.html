@@ -3,85 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Service - Category Search Prototype</title>
+    <title>Super Service - Premium Search Prototype</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        ::-webkit-scrollbar { width: 0px; } /* hide scrollbar for sleekness */
+        ::-webkit-scrollbar { width: 0px; }
         
-        body { background-color: #0b0e14; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #ffffff; overflow: hidden; }
+        body { background-color: #05070a; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #ffffff; overflow: hidden; }
 
         .device {
-            width: 375px; height: 812px; background-color: #121820; border-radius: 40px;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 0 0 8px #000; overflow: hidden;
+            width: 375px; height: 812px; background-color: #0c1015; border-radius: 40px;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.9), inset 0 0 0 8px #000; overflow: hidden;
             position: relative; display: flex; flex-direction: column;
         }
 
         .notch {
             position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-            width: 150px; height: 25px; background-color: #000; border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 16px; z-index: 100;
+            width: 150px; height: 25px; background-color: #000; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; z-index: 100;
         }
 
-        .screen { flex: 1; display: none; flex-direction: column; animation: slideInX 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; overflow-y: auto; background-color: #0b0e14; padding-bottom: 20px;}
+        .screen { flex: 1; display: none; flex-direction: column; animation: fadeSlideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; overflow-y: auto; background-color: #0c1015; padding-bottom: 20px;}
         .screen.active { display: flex; }
-        @keyframes slideInX { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Login */
-        .login { padding: 60px 30px; justify-content: center; background: radial-gradient(circle at top right, #1a2333, #0b0e14); text-align: center; }
-        .login-logo { font-size: 60px; background: -webkit-linear-gradient(#00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 20px rgba(79, 172, 254, 0.4)); margin-bottom: 20px; animation: bounce 2s infinite ease-in-out;}
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .login { padding: 60px 30px; justify-content: center; background: radial-gradient(circle at top, #1a2333, #0c1015); text-align: center; }
+        .login-logo { font-size: 130px; display:inline-block; background: -webkit-linear-gradient(45deg, #4facfe, #00f2fe, #f093fb, #f5576c); background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 15px 35px rgba(79, 172, 254, 0.6)); margin-bottom: 30px; animation: epicFloat 4s ease-in-out infinite, gradientShift 6s ease infinite;}
+        @keyframes epicFloat { 0%, 100% { transform: translateY(0) scale(1) rotate(0deg); } 50% { transform: translateY(-20px) scale(1.1) rotate(5deg); } }
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         
         .input-group { margin-bottom: 15px; position: relative; }
-        .input-group i { position: absolute; left: 25px; top: 18px; color: rgba(255,255,255,0.5); }
-        .login input { width: 100%; padding: 18px 20px 18px 55px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.03); color: white; outline: none; font-size: 15px; transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .login input:focus { background: rgba(255,255,255,0.08); border-color: #4facfe; box-shadow: 0 0 15px rgba(79, 172, 254, 0.3); }
-        .btn-primary { width: 100%; padding: 18px; border-radius: 20px; border: none; background: linear-gradient(135deg, #4facfe, #00f2fe); color: #000; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 20px; transition: transform 0.2s; box-shadow: 0 10px 20px rgba(0, 242, 254, 0.3); }
-        .btn-primary:active { transform: scale(0.95); }
+        .input-group i { position: absolute; left: 25px; top: 18px; color: rgba(255,255,255,0.4); }
+        .login input { width: 100%; padding: 18px 20px 18px 55px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); color: white; outline: none; font-size: 15px; transition: 0.3s; }
+        .login input:focus { background: rgba(255,255,255,0.05); border-color: #4facfe; box-shadow: 0 0 20px rgba(79, 172, 254, 0.2); }
+        .btn-primary { width: 100%; padding: 18px; border-radius: 20px; border: none; background: linear-gradient(135deg, #4facfe, #00f2fe); color: #000; font-weight: 800; font-size: 16px; cursor: pointer; margin-top: 20px; transition: 0.2s; box-shadow: 0 10px 30px rgba(0, 242, 254, 0.4); }
+        .btn-primary:active { transform: scale(0.96); }
 
         /* Home Dashboard */
         .header { padding: 50px 24px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .user-greeting { font-size: 28px; font-weight: 800; background: -webkit-linear-gradient(#fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .user-greeting { font-size: 28px; font-weight: 800; }
 
-        /* Stunning Category Cards */
-        .categories-grid { padding: 10px 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .cat-card {
-            border-radius: 24px; padding: 24px 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; overflow: hidden; transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .cat-card:active { transform: scale(0.92); }
-        .cat-card i { font-size: 38px; margin-bottom: 12px; position: relative; z-index: 2; color: #fff; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));}
-        .cat-card h3 { font-size: 16px; font-weight: 700; position: relative; z-index: 2; color: #fff; }
+        /* UPGRADED: Single column layout with beautiful large multi-color animated banners! */
+        .categories-grid { padding: 10px 24px 30px; display: flex; flex-direction: column; gap: 20px; }
+        .cat-card { border-radius: 24px; padding: 25px 25px; display: flex; align-items: center; gap: 25px; cursor: pointer; position: relative; overflow: hidden; transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); background-size: 300% 300% !important; animation: gradientShift 6s ease infinite;}
+        .cat-card:active { transform: scale(0.95); filter: brightness(0.9);}
+        .cat-card i { font-size: 42px; margin-bottom: 0; position: relative; z-index: 2; color: #fff; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.3));}
+        .cat-card div { display: flex; flex-direction: column; }
+        .cat-card h3 { font-size: 24px; font-weight: 800; position: relative; z-index: 2; color: #fff; letter-spacing:0.5px;}
+        .cat-card span { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.7); }
         
-        .cat-shop { background: linear-gradient(135deg, #ff416c, #ff4b2b); box-shadow: 0 10px 25px rgba(255, 65, 108, 0.3); }
-        .cat-ride { background: linear-gradient(135deg, #fceabb, #f8b500); box-shadow: 0 10px 25px rgba(248, 181, 0, 0.3); }
-        .cat-ride h3, .cat-ride i { color: #111;}
-        .cat-food { background: linear-gradient(135deg, #43e97b, #38f9d7); box-shadow: 0 10px 25px rgba(67, 233, 123, 0.3); }
-        .cat-food h3, .cat-food i { color: #111;}
-        .cat-grocery { background: linear-gradient(135deg, #667eea, #764ba2); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3); }
+        .cat-shop { background: linear-gradient(45deg, #ff416c, #ff4b2b, #ff7b93, #ff416c); box-shadow: 0 15px 35px rgba(255, 65, 108, 0.3); }
+        .cat-ride { background: linear-gradient(45deg, #fceabb, #f8b500, #ffde59, #fceabb); box-shadow: 0 15px 35px rgba(248, 181, 0, 0.3); }
+        .cat-ride h3, .cat-ride i, .cat-ride span { color: #111 !important;}
+        .cat-food { background: linear-gradient(45deg, #43e97b, #38f9d7, #66ff99, #43e97b); box-shadow: 0 15px 35px rgba(67, 233, 123, 0.3); }
+        .cat-food h3, .cat-food i, .cat-food span { color: #111 !important;}
+        .cat-grocery { background: linear-gradient(45deg, #667eea, #764ba2, #9b51e0, #667eea); box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3); }
 
-        /* Dynamic Category Hub Screen */
-        .hub-header { padding: 50px 24px 20px; transition: background 0.4s; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
-        .back-btn { font-size: 20px; cursor: pointer; padding: 10px 0; color: #fff; }
-        
+        /* Dynamic Hub Screen */
+        .hub-header { padding: 50px 24px 20px; transition: background 0.4s; border-bottom-left-radius: 35px; border-bottom-right-radius: 35px; box-shadow: 0 10px 40px rgba(0,0,0,0.6);}
+        .back-btn { font-size: 20px; cursor: pointer; padding: 10px 0; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.5);}
         .search-container { margin-top: 15px; position: relative; }
         .search-container i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: rgba(0,0,0,0.5); font-size: 18px; }
-        .search-container input { width: 100%; padding: 16px 20px 16px 45px; border-radius: 16px; border: none; background: rgba(255,255,255,0.9); color: #000; font-size: 15px; font-weight: 600; outline: none; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .search-container input { width: 100%; padding: 18px 20px 18px 45px; border-radius: 20px; border: none; background: rgba(255,255,255,0.95); color: #000; font-size: 15px; font-weight: 700; outline: none; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
 
-        /* Partners List / Search Results */
-        .hub-body { padding: 20px 24px; position: relative; min-height: 400px;}
-        .section-label { font-size: 14px; color: rgba(255,255,255,0.5); font-weight: 600; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;}
+        /* Partners & Comparisons */
+        .hub-body { padding: 25px 24px; position: relative; min-height: 400px;}
+        .section-label { font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 800; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1.5px;}
         
-        .partner-pill { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 15px 20px; display: flex; align-items: center; gap: 15px; margin-bottom: 12px; animation: slideInX 0.4s ease forwards; transform: scale(0.95); opacity: 0;}
-        .partner-pill:nth-child(2) { animation-delay: 0.1s; }
-        .partner-pill:nth-child(3) { animation-delay: 0.2s; }
+        .partner-pill { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: 15px 20px; display: flex; align-items: center; gap: 15px; margin-bottom: 12px; cursor:pointer; }
         
-        /* Search Card Comparison */
-        .comp-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 20px; margin-bottom: 15px; position: relative; overflow: hidden; animation: slideInX 0.4s ease forwards; opacity:0;}
+        /* Stunning Product Card Upgrade */
+        .comp-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 24px; padding: 20px; margin-bottom: 20px; position: relative; overflow: hidden; animation: fadeSlideUp 0.4s ease forwards; opacity:0;}
         .comp-card:nth-child(2) { animation-delay: 0.1s; }
         .comp-card:nth-child(3) { animation-delay: 0.2s; }
-        .comp-card.best { border: 2px solid #4facfe; background: rgba(79, 172, 254, 0.05); box-shadow: 0 10px 30px rgba(79, 172, 254, 0.15);}
-        .comp-card.best::before { content: 'BEST CHOICE'; position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #4facfe, #00f2fe); color: #000; font-size: 10px; font-weight: 800; padding: 6px 12px; border-bottom-left-radius: 12px; letter-spacing: 1px; }
+        .comp-card.best { border: 2px solid #4facfe; background: linear-gradient(to bottom right, rgba(79, 172, 254, 0.08), rgba(0,0,0,0)); box-shadow: 0 20px 40px rgba(79, 172, 254, 0.15);}
+        .comp-card.best::before { content: '🏆 BEST CHOICE'; position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #4facfe, #00f2fe); color: #000; font-size: 10px; font-weight: 800; padding: 8px 14px; border-bottom-left-radius: 16px; letter-spacing: 1px; z-index:5;}
+
+        .brand-badge { padding: 6px 12px; border-radius: 10px; font-weight: 800; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; letter-spacing: 0.5px;}
+        .product-body { display: flex; gap: 18px; margin: 15px 0; align-items: center;}
+        
+        /* Dynamic Image Display */
+        .product-img { width: 95px; height: 95px; border-radius: 20px; object-fit: cover; background-color: #1a1a1a; box-shadow: 0 10px 20px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); position:relative;}
+        .product-info { flex: 1; }
+
+        .fake-tag { display:inline-block; font-size:10px; font-weight:700; color:rgba(255,255,255,0.8); background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:8px; margin-bottom:5px; text-transform:uppercase;}
+
+        /* Delivery Address Overlay Interceptor */
+        .address-overlay { position: absolute; bottom: 0; left:0; width: 100%; background: #fff; color: #000; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 24px; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 50; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);}
+        .address-overlay.active { transform: translateY(0); }
+        .addr-card { border: 1px solid #ddd; border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; gap: 15px; align-items: center; cursor: pointer;}
+        .addr-card.selected { border: 2px solid #4facfe; background: rgba(79, 172, 254, 0.05); }
 
     </style>
 </head>
@@ -90,53 +102,69 @@
 <div class="device">
     <div class="notch"></div>
 
-    <!-- Login Screen -->
+    <!-- Login -->
     <div class="screen login active" id="loginScreen">
         <div class="login-logo"><i class="fa-solid fa-shapes"></i></div>
-        <h1 style="font-size:32px; font-weight:800; margin-bottom:5px;">Super App</h1>
-        <p style="color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:40px;">Your everyday everything app.</p>
+        <h1 style="font-size:36px; font-weight:800; margin-bottom:5px;">Super App</h1>
+        <p style="color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:45px;">Your everyday everything app.</p>
         
         <div class="input-group"><i class="fa-solid fa-user"></i><input type="text" value="alex@example.com"></div>
         <div class="input-group"><i class="fa-solid fa-lock"></i><input type="password" value="pass123"></div>
         
-        <button class="btn-primary" onclick="switchScreen('homeScreen')">Access World</button>
+        <button class="btn-primary" onclick="switchScreen('homeScreen')">Login Securely</button>
     </div>
 
-    <!-- Home Dashboard -->
+    <!-- Home -->
     <div class="screen home" id="homeScreen">
         <div class="header">
             <div>
-                <p style="color:rgba(255,255,255,0.6); font-size:16px;">Welcome back,</p>
-                <div class="user-greeting">Alex!</div>
+                <p style="color:rgba(255,255,255,0.4); font-size:14px; font-weight:600; text-transform:uppercase;">Welcome back,</p>
+                <div class="user-greeting">Alex M.</div>
             </div>
-            <div style="background:rgba(255,255,255,0.1); width:45px; height:45px; border-radius:50%; display:flex; justify-content:center; align-items:center;">
-                <i class="fa-solid fa-bell"></i>
+            <div style="background:rgba(255,255,255,0.05); width:50px; height:50px; border-radius:18px; display:flex; justify-content:center; align-items:center; border:1px solid rgba(255,255,255,0.05);">
+                <i class="fa-solid fa-bell" style="font-size:20px;"></i>
             </div>
         </div>
 
-        <p style="padding:0 24px; font-size:18px; font-weight:600; margin:10px 0;">What do you need today?</p>
+        <p style="padding:0 24px; font-size:22px; font-weight:700; margin:5px 0 15px;">Discover Hubs</p>
         
         <div class="categories-grid">
             <div class="cat-card cat-shop" onclick="openHub('shopping')">
-                <i class="fa-solid fa-bag-shopping"></i><h3>Shopping</h3>
+                <i class="fa-solid fa-bag-shopping"></i>
+                <div>
+                    <h3>Shopping</h3>
+                    <span>Amazon, Flipkart, Meesho...</span>
+                </div>
             </div>
             <div class="cat-card cat-ride" onclick="openHub('ride')">
-                <i class="fa-solid fa-car"></i><h3>Ride</h3>
+                <i class="fa-solid fa-car-side"></i>
+                <div>
+                    <h3>Rides</h3>
+                    <span>Uber, Ola, Rapido...</span>
+                </div>
             </div>
             <div class="cat-card cat-food" onclick="openHub('food')">
-                <i class="fa-solid fa-burger"></i><h3>Food</h3>
+                <i class="fa-solid fa-burger"></i>
+                <div>
+                    <h3>Food Delivery</h3>
+                    <span>Zomato, Swiggy Eats...</span>
+                </div>
             </div>
             <div class="cat-card cat-grocery" onclick="openHub('grocery')">
-                <i class="fa-solid fa-basket-shopping"></i><h3>Grocery</h3>
+                <i class="fa-solid fa-basket-shopping"></i>
+                <div>
+                    <h3>Grocery</h3>
+                    <span>Instamart, BigBasket...</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Dynamic Category Hub Screen -->
+    <!-- Hub Screen -->
     <div class="screen hub" id="hubScreen">
         <div class="hub-header" id="hubHeaderStyle">
             <i class="fa-solid fa-arrow-left back-btn" onclick="switchScreen('homeScreen')"></i>
-            <h2 id="hubTitle" style="font-size:28px; font-weight:800; margin-top:5px;">Category</h2>
+            <h2 id="hubTitle" style="font-size:32px; font-weight:800; margin-top:5px; letter-spacing:-1px;">Category</h2>
             
             <div class="search-container">
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -145,73 +173,104 @@
         </div>
 
         <div class="hub-body">
-            <p class="section-label" id="hubSectionLabel">Aggregated Partners</p>
-            <div id="hubContentArea">
-                <!-- Javascript will inject partners or search comparisons here -->
-            </div>
+            <p class="section-label" id="hubSectionLabel">Trusted Partners</p>
+            <div id="hubContentArea"></div>
         </div>
     </div>
 
+    <!-- Delivery intercepter -->
+    <div class="address-overlay" id="addressOverlay">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 style="font-size:20px; font-weight:800;">Confirm Location</h3>
+            <div style="background:#eee; width:30px; height:30px; border-radius:50%; display:flex; justify-content:center; align-items:center; cursor:pointer;" onclick="hideAddressOverlay()">
+                <i class="fa-solid fa-xmark"></i>
+            </div>
+        </div>
+        
+        <p style="font-size:13px; color:#666; margin-bottom:15px; font-weight:500;" id="addressPromptMsg">Select delivery/pickup address before proceeding directly to partner link.</p>
+        
+        <div class="addr-card selected" onclick="selectAddr(this)">
+            <i class="fa-solid fa-house" style="font-size:20px; color:#4facfe; width:30px;"></i>
+            <div style="flex:1;">
+                <p style="font-weight:700; font-size:15px;">Home</p>
+                <p style="font-size:12px; color:#888;">123 Pearl Enclave, Block A</p>
+            </div>
+            <input type="radio" checked name="addr_radio" style="accent-color: #4facfe; transform: scale(1.2);">
+        </div>
+        
+        <div class="addr-card" onclick="selectAddr(this)">
+            <i class="fa-solid fa-building" style="font-size:20px; color:#888; width:30px;"></i>
+            <div style="flex:1;">
+                <p style="font-weight:700; font-size:15px;">Office</p>
+                <p style="font-size:12px; color:#888;">Tech Park IT Solutions, Tower 3</p>
+            </div>
+            <input type="radio" name="addr_radio" style="accent-color: #4facfe; transform: scale(1.2);">
+        </div>
+        
+        <button id="addressConfirmBtn" style="width:100%; border:none; border-radius:16px; padding:18px; margin-top:20px; background:linear-gradient(135deg, #4facfe, #00f2fe); color:black; font-weight:700; font-size:16px; box-shadow: 0 10px 20px rgba(0, 242, 254, 0.3); cursor:pointer;" onclick="proceedToExternal()">
+            Confirm & Execute Route
+        </button>
+    </div>
 </div>
 
 <script>
-    // System Data Architecture
     const appData = {
         shopping: {
             title: 'Shopping', themeHeader: 'linear-gradient(135deg, #ff416c, #ff4b2b)', textHeader: '#fff',
-            placeholder: 'e.g. men jeans, shoes',
+            placeholder: 'Brands, Fashion, Tech...', fallbackImg: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=200',
             partners: [
-                { name: 'Amazon', icon: 'fa-brands fa-amazon', color: '#ff9900' },
-                { name: 'Flipkart', icon: 'fa-solid fa-cart-shopping', color: '#047bd5' },
-                { name: 'Meesho', icon: 'fa-solid fa-bag-shopping', color: '#f43397' }
+                { name: 'Amazon', icon: 'fa-brands fa-amazon', color: '#ff9900', rawUrl: 'https://amazon.in/s?k=' },
+                { name: 'Flipkart', icon: 'fa-solid fa-cart-shopping', color: '#047bd5', rawUrl: 'https://www.flipkart.com/search?q=' },
+                { name: 'Meesho', icon: 'fa-solid fa-bag-shopping', color: '#f43397', rawUrl: 'https://meesho.com/search?q=' }
             ],
             generators: [
-                { plat: 'Amazon', name: 'Premium $Q', basePrice: 1200, rating: 4.8, del: '1 Day', icon: 'fa-brands fa-amazon', col: '#ff9900' },
-                { plat: 'Flipkart', name: 'Trending $Q', basePrice: 999, rating: 4.5, del: '3 Days', icon: 'fa-solid fa-cart-shopping', col: '#047bd5' },
-                { plat: 'Meesho', name: 'Casual $Q', basePrice: 450, rating: 3.9, del: '5 Days', icon: 'fa-solid fa-bag-shopping', col: '#f43397' }
+                { plat: 'Amazon', name: 'Premium $Q', brand: 'Amazon Choice', basePrice: 1200, rating: 4.8, del: 'Prime Delivery', icon: 'fa-brands fa-amazon', col: '#ff9900', rawUrl: 'https://amazon.in/s?k=' },
+                { plat: 'Flipkart', name: 'Authentic $Q', brand: 'F-Assured', basePrice: 999, rating: 4.5, del: '3 Days', icon: 'fa-solid fa-cart-shopping', col: '#047bd5', rawUrl: 'https://www.flipkart.com/search?q=' },
+                { plat: 'Meesho', name: 'Trendy $Q', brand: 'Mega Mall', basePrice: 450, rating: 3.9, del: '5 Days', icon: 'fa-solid fa-bag-shopping', col: '#f43397', rawUrl: 'https://meesho.com/search?q=' }
             ]
         },
         ride: {
             title: 'Rides', themeHeader: 'linear-gradient(135deg, #fceabb, #f8b500)', textHeader: '#000',
-            placeholder: 'e.g. Airport, Mall',
+            placeholder: 'Airport, Station...', fallbackImg: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=200',
             partners: [
-                { name: 'Uber', icon: 'fa-brands fa-uber', color: '#000' },
-                { name: 'Ola', icon: 'fa-solid fa-car', color: '#cddc39', darkText: true },
-                { name: 'Rapido', icon: 'fa-solid fa-motorcycle', color: '#f9c522', darkText: true }
+                { name: 'Uber', icon: 'fa-brands fa-uber', color: '#000', rawUrl: 'https://m.uber.com/looking?drop=' },
+                { name: 'Ola', icon: 'fa-solid fa-car', color: '#cddc39', darkText: true, rawUrl: 'https://book.olacabs.com/?drop=' },
+                { name: 'Rapido', icon: 'fa-solid fa-motorcycle', color: '#f9c522', darkText: true, rawUrl: 'https://rapido.bike/' }
             ],
             generators: [
-                { plat: 'Uber', name: 'Uber Go to $Q', basePrice: 450, rating: 4.7, del: '3 mins away', icon: 'fa-brands fa-uber', col: '#000' },
-                { plat: 'Ola', name: 'Ola Mini to $Q', basePrice: 410, rating: 4.3, del: '5 mins away', icon: 'fa-solid fa-car', col: '#cddc39' },
-                { plat: 'Rapido', name: 'Bike to $Q', basePrice: 180, rating: 4.8, del: '2 mins away', icon: 'fa-solid fa-motorcycle', col: '#f9c522' }
+                { plat: 'Uber', name: 'Uber Premium to $Q', brand: 'UberX', basePrice: 450, rating: 4.9, del: '2 mins away', icon: 'fa-brands fa-uber', col: '#000', rawUrl: 'https://m.uber.com/looking?drop=' },
+                { plat: 'Ola', name: 'Ola Mini to $Q', brand: 'Ola Cabs', basePrice: 410, rating: 4.3, del: '5 mins away', icon: 'fa-solid fa-car', col: '#cddc39', rawUrl: 'https://book.olacabs.com/?drop=' },
+                { plat: 'Rapido', name: 'Bike to $Q', brand: 'Rapido Fast', basePrice: 180, rating: 4.8, del: '1 min away', icon: 'fa-solid fa-motorcycle', col: '#f9c522', rawUrl: 'https://rapido.bike/' }
             ]
         },
         food: {
             title: 'Food Delivery', themeHeader: 'linear-gradient(135deg, #43e97b, #38f9d7)', textHeader: '#000',
-            placeholder: 'e.g. Biryani, Pizza',
+            placeholder: 'Pizza, Biryani...', fallbackImg: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200',
             partners: [
-                { name: 'Zomato', icon: 'fa-solid fa-utensils', color: '#e23744' },
-                { name: 'Swiggy', icon: 'fa-solid fa-motorcycle', color: '#fc8019' }
+                { name: 'Zomato', icon: 'fa-solid fa-utensils', color: '#e23744', rawUrl: 'https://www.zomato.com/search?keyword=' },
+                { name: 'Swiggy', icon: 'fa-solid fa-motorcycle', color: '#fc8019', rawUrl: 'https://www.swiggy.com/search?res=' }
             ],
             generators: [
-                { plat: 'Zomato', name: 'Spicy $Q', basePrice: 350, rating: 4.6, del: '35 mins', icon: 'fa-solid fa-utensils', col: '#e23744' },
-                { plat: 'Swiggy', name: 'Hot $Q Combos', basePrice: 320, rating: 4.4, del: '40 mins', icon: 'fa-solid fa-motorcycle', col: '#fc8019' }
+                { plat: 'Zomato', name: 'Spicy $Q', brand: 'Zomato Gold', basePrice: 350, rating: 4.6, del: '35 mins', icon: 'fa-solid fa-utensils', col: '#e23744', rawUrl: 'https://www.zomato.com/search?keyword=' },
+                { plat: 'Swiggy', name: 'Hot $Q Combos', brand: 'Swiggy One', basePrice: 320, rating: 4.4, del: '40 mins', icon: 'fa-solid fa-motorcycle', col: '#fc8019', rawUrl: 'https://www.swiggy.com/search?res=' }
             ]
         },
         grocery: {
             title: 'Groceries', themeHeader: 'linear-gradient(135deg, #667eea, #764ba2)', textHeader: '#fff',
-            placeholder: 'e.g. Milk, Bread, Fruits',
+            placeholder: 'Milk, Bread, Fruits...', fallbackImg: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=200',
             partners: [
-                { name: 'Instamart', icon: 'fa-solid fa-bolt', color: '#fc8019' },
-                { name: 'BigBasket', icon: 'fa-solid fa-basket-shopping', color: '#84c225' }
+                { name: 'Instamart', icon: 'fa-solid fa-bolt', color: '#fc8019', rawUrl: 'https://www.swiggy.com/instamart/search?custom_back=true&query=' },
+                { name: 'BigBasket', icon: 'fa-solid fa-basket-shopping', color: '#84c225', rawUrl: 'https://www.bigbasket.com/ps/?q=' }
             ],
             generators: [
-                { plat: 'Instamart', name: 'Fresh $Q', basePrice: 80, rating: 4.8, del: '10 Mins', icon: 'fa-solid fa-bolt', col: '#fc8019' },
-                { plat: 'BigBasket', name: 'Organic $Q Pack', basePrice: 75, rating: 4.5, del: 'Tomorrow', icon: 'fa-solid fa-basket-shopping', col: '#84c225' }
+                { plat: 'Instamart', name: 'Fresh $Q', brand: 'Instant Delivery', basePrice: 80, rating: 4.8, del: '10 Mins', icon: 'fa-solid fa-bolt', col: '#fc8019', rawUrl: 'https://www.swiggy.com/instamart/search?custom_back=true&query=' },
+                { plat: 'BigBasket', name: 'Organic $Q Pack', brand: 'BB Daily', basePrice: 75, rating: 4.5, del: 'Tomorrow', icon: 'fa-solid fa-basket-shopping', col: '#84c225', rawUrl: 'https://www.bigbasket.com/ps/?q=' }
             ]
         }
     };
 
     let activeHubId = '';
+    let pendingExternalUrl = '';
 
     function switchScreen(screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -223,7 +282,6 @@
         activeHubId = id;
         const data = appData[id];
         
-        // Theme Apply
         const header = document.getElementById('hubHeaderStyle');
         header.style.background = data.themeHeader;
         document.getElementById('hubTitle').innerText = data.title;
@@ -238,77 +296,116 @@
         switchScreen('hubScreen');
     }
 
+    function promptRedirect(rawUrl, queryText, platformName) {
+        // If querytext exists, append it to the rawUrl. If not, just redirect to the portal home.
+        const encoded = encodeURIComponent(queryText);
+        pendingExternalUrl = queryText ? (rawUrl + encoded) : rawUrl.split('?')[0]; // simple split for clean domain if no query
+        
+        document.getElementById('addressConfirmBtn').innerText = 'Proceed directly to ' + platformName + ' App';
+        document.getElementById('addressPromptMsg').innerText = `Select delivery tracking address before routing directly to the ${queryText || 'home'} page on ${platformName}.`;
+        document.getElementById('addressOverlay').classList.add('active');
+    }
+
+    function hideAddressOverlay() { document.getElementById('addressOverlay').classList.remove('active'); }
+
+    function proceedToExternal() {
+        hideAddressOverlay();
+        window.open(pendingExternalUrl, '_blank');
+    }
+
+    function selectAddr(element) {
+        document.querySelectorAll('.addr-card').forEach(c => c.classList.remove('selected'));
+        element.classList.add('selected');
+        element.querySelector('input[type="radio"]').checked = true;
+    }
+
     function renderPartners() {
-        document.getElementById('hubSectionLabel').innerText = 'Aggregated Partners';
+        document.getElementById('hubSectionLabel').innerText = 'Explore Partners';
         const data = appData[activeHubId];
         let html = '';
         data.partners.forEach(p => {
             const txtCol = p.darkText ? '#000' : '#fff';
             html += `
-                <div class="partner-pill">
-                    <div style="background:${p.color}; width:45px; height:45px; border-radius:12px; display:flex; justify-content:center; align-items:center; color:${txtCol}; font-size:20px;">
+                <div class="partner-pill" onclick="promptRedirect('${p.rawUrl}', '', '${p.name}')">
+                    <div style="background:${p.color}; width:50px; height:50px; border-radius:14px; display:flex; justify-content:center; align-items:center; color:${txtCol}; font-size:24px; box-shadow: 0 5px 15px ${p.color}44;">
                         <i class="${p.icon}"></i>
                     </div>
-                    <div style="font-weight:600; font-size:18px;">${p.name}</div>
-                    <i class="fa-solid fa-arrow-right" style="margin-left:auto; color:rgba(255,255,255,0.2);"></i>
+                    <div>
+                        <div style="font-weight:800; font-size:18px;">${p.name}</div>
+                        <div style="font-size:12px; color:rgba(255,255,255,0.4); font-weight:600;">Official Integration</div>
+                    </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:auto; color:rgba(255,255,255,0.2);"></i>
                 </div>
             `;
         });
         document.getElementById('hubContentArea').innerHTML = html;
     }
 
+    let searchTimeout;
     function handleSearch(e) {
-        const query = e.target.value.trim();
-        if(query.length > 0) {
-            renderComparisons(query);
-        } else {
-            renderPartners();
-        }
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            const query = e.target.value.trim();
+            if(query.length > 0) { renderComparisons(query); } else { renderPartners(); }
+        }, 500); 
     }
 
     function renderComparisons(query) {
-        document.getElementById('hubSectionLabel').innerText = `Comparing results for "${query}"`;
+        document.getElementById('hubSectionLabel').innerText = `Comparing deals for "${query}"`;
         const data = appData[activeHubId];
 
-        // Generate mock data based on query 
         let comps = data.generators.map(g => {
-            // Randomize price slightly around base
             let variance = Math.floor(g.basePrice * 0.1); 
             let finalPrice = g.basePrice + (Math.floor(Math.random() * variance * 2) - variance);
-            
-            // Score Logic: Lower price = better
             let score = (1000 / finalPrice) * g.rating;
+            
+            // Using an AI generation API to semantically match the exact product they search!
+            let encodedQuery = encodeURIComponent(query + ' product professional photography');
+            let dynamicImg = `https://image.pollinations.ai/prompt/${encodedQuery}?nologo=true&width=200&height=200`;
 
-            return { ...g, name: g.name.replace('$Q', query), price: finalPrice, score: score };
+            return { ...g, name: g.name.replace('$Q', query), price: finalPrice, score: score, dynamicImg: dynamicImg };
         });
 
-        // Sort & Find Best
         comps.sort((a,b) => b.score - a.score);
         comps[0].best = true;
 
         let html = '';
         comps.forEach(c => {
             const bestClass = c.best ? 'best' : '';
+            const txtCol = (c.plat==='Ola'||c.plat==='Rapido') ? '#000' : '#fff';
             html += `
                 <div class="comp-card ${bestClass}">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <div style="display:flex; align-items:center; gap:8px; color:${c.col}; font-weight:700;"><i class="${c.icon}"></i> ${c.plat}</div>
-                        <div style="font-size:22px; font-weight:800;">₹${c.price}</div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div class="brand-badge" style="background:${c.col}1a; color:${c.col};"><i class="${c.icon}"></i> ${c.plat} Verified</div>
+                        <div style="font-size:24px; font-weight:800; letter-spacing:-0.5px;">₹${c.price}</div>
                     </div>
-                    <p style="font-size:15px; margin-bottom:15px;">${c.name}</p>
-                    <div style="display:flex; justify-content:space-between; font-size:12px; color:rgba(255,255,255,0.6);">
-                        <div><i class="fa-solid fa-star" style="color:#ffc107;"></i> ${c.rating}</div>
-                        <div><i class="fa-solid fa-bolt"></i> ${c.del}</div>
+                    
+                    <div class="product-body">
+                        <!-- Added branding watermark icon over the image directly representing the platform -->
+                        <div style="position:relative;">
+                            <img src="${c.dynamicImg}" onerror="this.onerror=null; this.src='${data.fallbackImg}'" class="product-img" alt="${c.plat} Image" loading="lazy">
+                            <div style="position:absolute; bottom:-5px; right:-5px; background:${c.col}; width:24px; height:24px; border-radius:50%; display:flex; justify-content:center; align-items:center; color:${txtCol}; font-size:11px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);"><i class="${c.icon}"></i></div>
+                        </div>
+
+                        <div class="product-info">
+                            <div class="fake-tag">${c.brand}</div>
+                            <p style="font-size:16px; font-weight:700; margin-bottom:8px; line-height:1.2; text-transform:capitalize;">${c.name}</p>
+                            <div style="display:flex; flex-direction:column; gap:4px; font-size:13px; color:rgba(255,255,255,0.6); font-weight:500;">
+                                <div><i class="fa-solid fa-star" style="color:#ffc107;"></i> ${c.rating} User Rating</div>
+                                <div><i class="fa-solid fa-bolt" style="color:#4facfe;"></i> ${c.del}</div>
+                            </div>
+                        </div>
                     </div>
-                    <button style="width:100%; margin-top:15px; padding:12px; border-radius:12px; border:none; background:${c.col}; color:${c.plat==='Ola'||c.plat==='Rapido'||c.plat==='Uber'?'#fff':'#fff'}; font-weight:600; cursor:pointer;">
-                        Purchase via ${c.plat}
+                    
+                    <button onclick="promptRedirect('${c.rawUrl}', '${query}', '${c.plat}')" style="width:100%; padding:14px; border-radius:16px; border:none; background:${c.col}; color:${txtCol}; font-weight:700; font-size:15px; cursor:pointer; display:flex; justify-content:center; align-items:center; gap:8px; box-shadow: 0 5px 15px ${c.col}44;">
+                        Checkout on ${c.plat} <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
             `;
         });
         document.getElementById('hubContentArea').innerHTML = html;
     }
-
 </script>
 </body>
 </html>
