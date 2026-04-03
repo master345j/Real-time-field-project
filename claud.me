@@ -1,0 +1,39 @@
+# Super Service Aggregator Architecture & Context
+
+This file serves as the core system instruction set and architectural blueprint for the Super Service Aggregator project.
+
+## Overview & Vision
+A highly scalable mobile application build with Flutter and powered by a Node.js/Express backend. It serves two core functions:
+1.  **Internal Services (Grab/Gojek Clone):** Taxi booking, home services, and direct deliveries using custom providers.
+2.  **Universal Partner Aggregator:** A cross-platform search engine that aggregates external giants (Amazon, Flipkart, Zomato, Swiggy) into a unified shopping hub.
+
+## Tech Stack
+*   **Frontend:** Flutter (Single Codebase for iOS/Android)
+*   **Backend:** Node.js with Express.js
+*   **Database:** MongoDB (with geospatial indexing for mapping)
+*   **Authentication:** JWT (Json Web Tokens) 
+*   **Real-time Logic:** Socket.io
+*   **Payments:** Razorpay integration (Pending Phase 3)
+
+## Repository Structure & Components
+
+### 1. Node.js Backend (`/backend`)
+*   **Data Models (`src/models/`):** Robust schemas spanning `User`, `Provider`, `Service`, `Order`, `Payment`, `Review`, and `Notification`.
+*   **Auth Module:** Secured `register` and `login` routing using `bcryptjs`.
+*   **Aggregator Engine (`src/services/aggregatorEngine.js`):** The crown jewel of Phase 2. A custom evaluation algorithm that processes third-party API data (e.g. Amazon vs Flipkart). It evaluates options using a strict weighting system:
+    *   `60% Weight` -> Best Price
+    *   `30% Weight` -> Fastest Delivery Time
+    *   `10% Weight` -> Highest Customer Rating
+*   **Search API:** The `/api/search` endpoint pipes the normalized results to the frontend, explicitly flagging the "Best Deal".
+
+### 2. Flutter Frontend (`/frontend`)
+*   **Active Prototype (`preview.html`):** Since Flutter runtimes were missing natively during development, a fully interactive, high-fidelity UI prototype was constructed in HTML/CSS/JS. It showcases the premium Dark Mode aesthetic, animated Splash Screen, Login bindings, and the functional Hub Webviews.
+*   **Flutter Architecture Structure:** 
+    *   `lib/screens/`: Contains Splash, Login, Unified Search, and Webview screens.
+    *   `lib/providers/`: Global state management (`AuthProvider`).
+*   **WebView Integration Strategy:** To bypass third-party SSO restrictions, the aggregator opens an embedded secure WebView (`partner_webview_screen.dart`), retaining their Amazon/Zomato cookies locally so they can purchase their aggregated deals without losing the Super App context.
+
+## Active Progress
+*   **Phase 1 (Scaffolding):** Complete (Node Setup, Mongo DB, Authentication, Flutter Foundations).
+*   **Phase 2 (Aggregation):** Complete (Universal Search Backend Engine, Advanced Layout Prototyping `preview.html`).
+*   **Phase 3 (Upcoming):** Integrating the Aggregator Logic dynamically into functional Dart code, solidifying WebSocket tracking, and building Razorpay bridges.
