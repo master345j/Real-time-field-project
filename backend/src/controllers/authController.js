@@ -70,4 +70,35 @@ const loginUser = async (req, res, next) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+const googleAuth = async (req, res, next) => {
+  try {
+    const email = process.env.GOOGLE_DEMO_EMAIL || 'google-user@example.com';
+    const name = process.env.GOOGLE_DEMO_NAME || 'Google User';
+    const phone = process.env.GOOGLE_DEMO_PHONE || '0000000000';
+
+    let user = await User.findOne({ email });
+    if (!user) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(email + process.env.JWT_SECRET, salt);
+      user = await User.create({
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+        role: 'user',
+      });
+    }
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      token: generateToken(user._id),
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { registerUser, loginUser, googleAuth };

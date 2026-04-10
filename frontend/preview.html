@@ -6,6 +6,7 @@
     <title>Super Service - Premium Search Prototype</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         ::-webkit-scrollbar { width: 0px; }
@@ -33,6 +34,15 @@
         @keyframes epicFloat { 0%, 100% { transform: translateY(0) scale(1) rotate(0deg); } 50% { transform: translateY(-20px) scale(1.1) rotate(5deg); } }
         @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         
+        .auth-toggle { display:flex; gap: 12px; margin-bottom: 20px; justify-content: center; }
+        .auth-btn { flex: 1; border: none; border-radius: 999px; padding: 14px 0; background: rgba(255,255,255,0.08); color: #fff; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .auth-btn.active { background: #4facfe; color: #000; box-shadow: 0 12px 30px rgba(79, 172, 254, 0.18); }
+        .google-btn { width: 100%; padding: 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); color: #fff; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 18px; }
+        .google-btn i { font-size: 18px; }
+        .auth-divider { display: flex; align-items: center; gap: 14px; margin: 20px 0; color: rgba(255,255,255,0.45); font-size: 13px; }
+        .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+        .link-button { background: none; border: none; color: #4facfe; font-weight: 700; cursor: pointer; padding: 0; margin: 0; }
+        .hidden { display: none !important; }
         .input-group { margin-bottom: 15px; position: relative; }
         .input-group i { position: absolute; left: 25px; top: 18px; color: rgba(255,255,255,0.4); }
         .login input { width: 100%; padding: 18px 20px 18px 55px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); color: white; outline: none; font-size: 15px; transition: 0.3s; }
@@ -66,6 +76,7 @@
         .search-container { margin-top: 15px; position: relative; }
         .search-container i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: rgba(0,0,0,0.5); font-size: 18px; }
         .search-container input { width: 100%; padding: 18px 20px 18px 45px; border-radius: 20px; border: none; background: rgba(255,255,255,0.95); color: #000; font-size: 15px; font-weight: 700; outline: none; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
+        .status-badge { display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.4px; position: absolute; right: 0; top: 0; background: #4facfe; color: #000; box-shadow: 0 8px 20px rgba(79, 172, 254, 0.18); }
 
         /* Partners & Comparisons */
         .hub-body { padding: 25px 24px; position: relative; min-height: 400px;}
@@ -106,12 +117,24 @@
     <div class="screen login active" id="loginScreen">
         <div class="login-logo"><i class="fa-solid fa-shapes"></i></div>
         <h1 style="font-size:36px; font-weight:800; margin-bottom:5px;">Super App</h1>
-        <p style="color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:45px;">Your everyday everything app.</p>
-        
-        <div class="input-group"><i class="fa-solid fa-user"></i><input type="text" value="alex@example.com"></div>
-        <div class="input-group"><i class="fa-solid fa-lock"></i><input type="password" value="pass123"></div>
-        
-        <button class="btn-primary" onclick="switchScreen('homeScreen')">Login Securely</button>
+        <p style="color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:25px;">Your everyday everything app.</p>
+
+        <div class="auth-toggle">
+            <button class="auth-btn active" id="loginTab" onclick="toggleAuthMode('login')">Login</button>
+            <button class="auth-btn" id="registerTab" onclick="toggleAuthMode('register')">Create account</button>
+        </div>
+
+        <button class="google-btn" type="button" onclick="submitGoogleAuth()">
+            <i class="fa-brands fa-google"></i>
+            <span id="googleAuthLabel">Continue with Google</span>
+        </button>
+
+        <p id="authError" style="color:#f5576c;font-size:13px;margin-bottom:8px;min-height:18px;"></p>
+
+        <p style="margin-top: 18px; color: rgba(255,255,255,0.6); font-size:13px;">
+            <span id="authSwitchText">Don’t have an account?</span>
+            <button id="authSwitchBtn" class="link-button" type="button" onclick="toggleAuthMode('register')">Create account</button>
+        </p>
     </div>
 
     <!-- Home -->
@@ -119,7 +142,7 @@
         <div class="header">
             <div>
                 <p style="color:rgba(255,255,255,0.4); font-size:14px; font-weight:600; text-transform:uppercase;">Welcome back,</p>
-                <div class="user-greeting">Alex M.</div>
+                <div class="user-greeting" id="userGreetingName">Alex M.</div>
             </div>
             <div style="background:rgba(255,255,255,0.05); width:50px; height:50px; border-radius:18px; display:flex; justify-content:center; align-items:center; border:1px solid rgba(255,255,255,0.05);">
                 <i class="fa-solid fa-bell" style="font-size:20px;"></i>
@@ -166,9 +189,12 @@
             <i class="fa-solid fa-arrow-left back-btn" onclick="switchScreen('homeScreen')"></i>
             <h2 id="hubTitle" style="font-size:32px; font-weight:800; margin-top:5px; letter-spacing:-1px;">Category</h2>
             
-            <div class="search-container">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="hubSearchInput" placeholder="Search..." onkeyup="handleSearch(event)">
+            <div style="position:relative;">
+                <div class="search-container">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="hubSearchInput" placeholder="Search..." onkeyup="handleSearch(event)">
+                </div>
+                <span id="liveStatusBadge" class="status-badge">Live search ready</span>
             </div>
         </div>
 
@@ -214,6 +240,156 @@
 </div>
 
 <script>
+    const API_BASE = (() => {
+        const { protocol, hostname, host, port } = window.location;
+        if (protocol === 'file:' || !hostname) {
+            return 'http://localhost:5000/api';
+        }
+        if (port === '5000') {
+            return protocol + '//' + host + '/api';
+        }
+        return protocol + '//' + hostname + ':5000/api';
+    })();
+
+    const SOCKET_BASE = API_BASE.replace('/api', '');
+    const socket = window.io ? io(SOCKET_BASE, { transports: ['websocket', 'polling'], reconnectionAttempts: 5 }) : null;
+    let socketActive = false;
+    let currentSearchQuery = '';
+    let authMode = 'login';
+    let searchTimeout;
+
+    function updateLiveStatus(message, background) {
+        const badge = document.getElementById('liveStatusBadge');
+        if (!badge) return;
+        badge.innerText = message;
+        badge.style.background = background || '#4facfe';
+        badge.style.color = '#000';
+    }
+
+    if (socket) {
+        socket.on('connect', () => {
+            socketActive = true;
+            updateLiveStatus('Live search connected', '#4facfe');
+        });
+
+        socket.on('disconnect', () => {
+            socketActive = false;
+            updateLiveStatus('Live search offline', '#f5576c');
+        });
+
+        socket.on('searchResults', (payload) => {
+            if (!payload || payload.query !== currentSearchQuery) return;
+            renderComparisonRows(payload.results || [], payload.query, 'Live results');
+        });
+
+        socket.on('searchError', (error) => {
+            updateLiveStatus(error?.message || 'Live search failed', '#f5576c');
+        });
+    }
+
+    function getAuthToken() {
+        try { return sessionStorage.getItem('authToken'); } catch (e) { return null; }
+    }
+
+    function renderComparisonRows(rows, query, labelPrefix = 'Live results') {
+        const data = appData[activeHubId] || appData.shopping;
+        document.getElementById('hubSectionLabel').innerText = rows.length ? `${labelPrefix} for "${query}"` : `No matches for "${query}"`;
+
+        if (!rows.length) {
+            document.getElementById('hubContentArea').innerHTML = '<p style="color:rgba(255,255,255,0.5);">Try another search or browse trusted partners.</p>';
+            return;
+        }
+
+        const html = rows.map((row, index) => {
+            const price = row.price || 0;
+            const col = row.color || '#4facfe';
+            const icon = platformIconClass(row.platform);
+            const txtCol = '#fff';
+            const bestClass = row.bestChoice ? 'best' : '';
+            const title = row.productName || row.name || `${row.platform} Result`;
+            const delLabel = row.deliveryDays === 0 ? 'Fast delivery' : `${row.deliveryDays} day(s)`;
+            const encodedQuery = encodeURIComponent(query + ' product professional photography');
+            const dynamicImg = row.image || `https://image.pollinations.ai/prompt/${encodedQuery}?nologo=true&width=200&height=200`;
+            const targetUrl = row.url || '#';
+            return `
+                <div class="comp-card ${bestClass}">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div class="brand-badge" style="background:${col}1a; color:${col};"><i class="${icon}"></i> ${row.platform} Live</div>
+                        <div style="font-size:24px; font-weight:800; letter-spacing:-0.5px;">${row.currency || '₹'}${price}</div>
+                    </div>
+                    <div class="product-body">
+                        <div style="position:relative;">
+                            <img src="${dynamicImg}" onerror="this.onerror=null; this.src='${data.fallbackImg}'" class="product-img" alt="${row.platform}" loading="lazy">
+                            <div style="position:absolute; bottom:-5px; right:-5px; background:${col}; width:24px; height:24px; border-radius:50%; display:flex; justify-content:center; align-items:center; color:${txtCol}; font-size:11px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);"><i class="${icon}"></i></div>
+                        </div>
+                        <div class="product-info">
+                            <div class="fake-tag">Aggregator</div>
+                            <p style="font-size:16px; font-weight:700; margin-bottom:8px; line-height:1.2;">${title}</p>
+                            <div style="display:flex; flex-direction:column; gap:4px; font-size:13px; color:rgba(255,255,255,0.6); font-weight:500;">
+                                <div><i class="fa-solid fa-star" style="color:#ffc107;"></i> ${row.rating || 4.5} Rating</div>
+                                <div><i class="fa-solid fa-bolt" style="color:#4facfe;"></i> ${delLabel}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="promptRedirect('${escapeJs(targetUrl)}', '${escapeJs(query)}', '${escapeJs(row.platform)}')" style="width:100%; padding:14px; border-radius:16px; border:none; background:${col}; color:${txtCol}; font-weight:700; font-size:15px; cursor:pointer; display:flex; justify-content:center; align-items:center; gap:8px; box-shadow: 0 5px 15px ${col}44;">
+                        Open on ${row.platform} <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>`;
+        }).join('');
+
+        document.getElementById('hubContentArea').innerHTML = html;
+    }
+
+    function openGoogleAuth() {
+        window.open('https://accounts.google.com/signin', '_blank');
+    }
+
+    function toggleAuthMode(mode) {
+        authMode = mode;
+        document.getElementById('loginTab').classList.toggle('active', mode === 'login');
+        document.getElementById('registerTab').classList.toggle('active', mode === 'register');
+        document.getElementById('googleAuthLabel').innerText = mode === 'login' ? 'Continue with Google' : 'Create account with Google';
+        document.getElementById('authSwitchText').innerText = mode === 'login' ? 'Don’t have an account?' : 'Already have an account?';
+        document.getElementById('authSwitchBtn').innerText = mode === 'login' ? 'Create account' : 'Login';
+        document.getElementById('authSwitchBtn').setAttribute('onclick', `toggleAuthMode('${mode === 'login' ? 'register' : 'login'}')`);
+        document.getElementById('authError').innerText = '';
+    }
+
+    async function submitGoogleAuth() {
+        const err = document.getElementById('authError');
+        err.innerText = '';
+        updateLiveStatus(authMode === 'register' ? 'Registering with backend...' : 'Signing in with backend...', '#4facfe');
+
+        try {
+            const res = await fetch(API_BASE + '/auth/google', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            });
+            const body = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                updateLiveStatus('Backend login failed', '#f5576c');
+                err.innerText = body.message || 'Unable to sign in with backend.';
+                return;
+            }
+            setAuthSession(body.token, body.name || 'User');
+            updateLiveStatus('Connected to backend', '#4facfe');
+            switchScreen('homeScreen');
+        } catch (e) {
+            updateLiveStatus('Backend unavailable', '#f5576c');
+            err.innerText = 'Unable to connect to backend. Make sure server is running on port 5000.';
+        }
+    }
+
+    function setAuthSession(token, name) {
+        sessionStorage.setItem('authToken', token);
+        if (name) sessionStorage.setItem('userName', name);
+        const el = document.getElementById('userGreetingName');
+        if (el && name) {
+            const first = String(name).trim().split(/\s+/)[0];
+            el.innerText = first || name;
+        }
+    }
+
     const appData = {
         shopping: {
             title: 'Shopping', themeHeader: 'linear-gradient(135deg, #ff416c, #ff4b2b)', textHeader: '#fff',
@@ -293,6 +469,7 @@
         searchInput.value = '';
 
         renderPartners();
+        updateLiveStatus(socketActive ? 'Live search connected' : 'Live search offline', socketActive ? '#4facfe' : '#f5576c');
         switchScreen('hubScreen');
     }
 
@@ -341,25 +518,55 @@
         document.getElementById('hubContentArea').innerHTML = html;
     }
 
+    function escapeJs(s) {
+        return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    }
+
+    function platformIconClass(platform) {
+        if (platform === 'Amazon') return 'fa-brands fa-amazon';
+        if (platform === 'Flipkart') return 'fa-solid fa-cart-shopping';
+        if (platform === 'Uber') return 'fa-brands fa-uber';
+        if (platform === 'Zomato') return 'fa-solid fa-utensils';
+        return 'fa-solid fa-store';
+    }
+
     let searchTimeout;
     function handleSearch(e) {
         clearTimeout(searchTimeout);
+        const query = e.target.value.trim();
+        currentSearchQuery = query;
+
+        if (!query) {
+            renderPartners();
+            updateLiveStatus('Browse partners or search live', '#8a8f9c');
+            return;
+        }
+
         searchTimeout = setTimeout(() => {
-            const query = e.target.value.trim();
-            if(query.length > 0) { renderComparisons(query); } else { renderPartners(); }
-        }, 500); 
+            if (socketActive) {
+                document.getElementById('hubSectionLabel').innerText = `Searching live for "${query}"...`;
+                document.getElementById('hubContentArea').innerHTML = '<p style="color:rgba(255,255,255,0.5);">Loading live results…</p>';
+                socket.emit('searchQuery', { query, category: activeHubId });
+                return;
+            }
+            if (getAuthToken()) {
+                renderComparisons(query);
+            } else {
+                renderComparisonsLocal(query);
+                updateLiveStatus('Offline search mode', '#8a8f9c');
+            }
+        }, 300);
     }
 
-    function renderComparisons(query) {
+    function renderComparisonsLocal(query) {
         document.getElementById('hubSectionLabel').innerText = `Comparing deals for "${query}"`;
         const data = appData[activeHubId];
 
         let comps = data.generators.map(g => {
-            let variance = Math.floor(g.basePrice * 0.1); 
+            let variance = Math.floor(g.basePrice * 0.1);
             let finalPrice = g.basePrice + (Math.floor(Math.random() * variance * 2) - variance);
             let score = (1000 / finalPrice) * g.rating;
             
-            // Using an AI generation API to semantically match the exact product they search!
             let encodedQuery = encodeURIComponent(query + ' product professional photography');
             let dynamicImg = `https://image.pollinations.ai/prompt/${encodedQuery}?nologo=true&width=200&height=200`;
 
@@ -382,7 +589,6 @@
                     </div>
                     
                     <div class="product-body">
-                        <!-- Added branding watermark icon over the image directly representing the platform -->
                         <div style="position:relative;">
                             <img src="${c.dynamicImg}" onerror="this.onerror=null; this.src='${data.fallbackImg}'" class="product-img" alt="${c.plat} Image" loading="lazy">
                             <div style="position:absolute; bottom:-5px; right:-5px; background:${c.col}; width:24px; height:24px; border-radius:50%; display:flex; justify-content:center; align-items:center; color:${txtCol}; font-size:11px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);"><i class="${c.icon}"></i></div>
@@ -398,13 +604,85 @@
                         </div>
                     </div>
                     
-                    <button onclick="promptRedirect('${c.rawUrl}', '${query}', '${c.plat}')" style="width:100%; padding:14px; border-radius:16px; border:none; background:${c.col}; color:${txtCol}; font-weight:700; font-size:15px; cursor:pointer; display:flex; justify-content:center; align-items:center; gap:8px; box-shadow: 0 5px 15px ${c.col}44;">
+                    <button onclick="promptRedirect('${c.rawUrl}', '${escapeJs(query)}', '${c.plat}')" style="width:100%; padding:14px; border-radius:16px; border:none; background:${c.col}; color:${txtCol}; font-weight:700; font-size:15px; cursor:pointer; display:flex; justify-content:center; align-items:center; gap:8px; box-shadow: 0 5px 15px ${c.col}44;">
                         Checkout on ${c.plat} <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
             `;
         });
         document.getElementById('hubContentArea').innerHTML = html;
+    }
+
+    async function renderComparisons(query) {
+        const token = getAuthToken();
+        if (!token) {
+            document.getElementById('hubSectionLabel').innerText = 'Sign in required';
+            document.getElementById('hubContentArea').innerHTML = '<p style="color:rgba(255,255,255,0.55);font-weight:600;">Log in on the first screen to load live comparison data from the API.</p>';
+            return;
+        }
+
+        document.getElementById('hubSectionLabel').innerText = `Loading live results for "${query}"…`;
+        document.getElementById('hubContentArea').innerHTML = '<p style="color:rgba(255,255,255,0.5);">Loading…</p>';
+
+        try {
+            const res = await fetch(API_BASE + '/search?q=' + encodeURIComponent(query), {
+                headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' }
+            });
+            const body = await res.json().catch(() => ({}));
+            if (res.status === 401) {
+                sessionStorage.removeItem('authToken');
+                document.getElementById('hubSectionLabel').innerText = 'Session expired';
+                document.getElementById('hubContentArea').innerHTML = '<p style="color:rgba(255,255,255,0.55);">Please log in again.</p>';
+                return;
+            }
+            if (!res.ok) {
+                throw new Error(body.message || 'Search failed');
+            }
+            const rows = body.data || [];
+            const data = appData[activeHubId];
+            let html = '';
+            rows.forEach((row) => {
+                const col = row.color || '#4facfe';
+                const icon = platformIconClass(row.platform);
+                const txtCol = '#fff';
+                const bestClass = row.bestChoice ? 'best' : '';
+                const encodedQuery = encodeURIComponent(query + ' product professional photography');
+                const dynamicImg = `https://image.pollinations.ai/prompt/${encodedQuery}?nologo=true&width=200&height=200`;
+                const delLabel = row.deliveryDays === 1 ? 'Prime / Fast' : row.deliveryDays + ' day(s)';
+                const qEsc = escapeJs(query);
+                const platEsc = escapeJs(row.platform);
+                const urlEsc = escapeJs(row.url);
+                html += `
+                <div class="comp-card ${bestClass}">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div class="brand-badge" style="background:${col}1a; color:${col};"><i class="${icon}"></i> ${row.platform} Live</div>
+                        <div style="font-size:24px; font-weight:800; letter-spacing:-0.5px;">${row.currency}${row.price}</div>
+                    </div>
+                    <div class="product-body">
+                        <div style="position:relative;">
+                            <img src="${dynamicImg}" onerror="this.onerror=null; this.src='${data.fallbackImg}'" class="product-img" alt="${row.platform}" loading="lazy">
+                            <div style="position:absolute; bottom:-5px; right:-5px; background:${col}; width:24px; height:24px; border-radius:50%; display:flex; justify-content:center; align-items:center; color:${txtCol}; font-size:11px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);"><i class="${icon}"></i></div>
+                        </div>
+                        <div class="product-info">
+                            <div class="fake-tag">Aggregator</div>
+                            <p style="font-size:16px; font-weight:700; margin-bottom:8px; line-height:1.2;">${row.productName}</p>
+                            <div style="display:flex; flex-direction:column; gap:4px; font-size:13px; color:rgba(255,255,255,0.6); font-weight:500;">
+                                <div><i class="fa-solid fa-star" style="color:#ffc107;"></i> ${row.rating} Rating</div>
+                                <div><i class="fa-solid fa-bolt" style="color:#4facfe;"></i> ${delLabel}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="promptRedirect('${urlEsc}', '${qEsc}', '${platEsc}')" style="width:100%; padding:14px; border-radius:16px; border:none; background:${col}; color:${txtCol}; font-weight:700; font-size:15px; cursor:pointer; display:flex; justify-content:center; align-items:center; gap:8px; box-shadow: 0 5px 15px ${col}44;">
+                        Open on ${row.platform} <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>`;
+            });
+            document.getElementById('hubSectionLabel').innerText = `Live results for "${query}"`;
+            document.getElementById('hubContentArea').innerHTML = html || '<p style="color:rgba(255,255,255,0.5);">No results.</p>';
+        } catch (e) {
+            document.getElementById('hubSectionLabel').innerText = `Offline comparison for "${query}"`;
+            renderComparisonsLocal(query);
+        }
     }
 </script>
 </body>
